@@ -260,7 +260,10 @@ class DefensivePro(CaptureAgent):
             enemies = [successor.get_agent_state(i) for i in self.get_opponents(successor)]
             invaders = [a for a in enemies if a.is_pacman and a.get_position() is not None]
             
-            center_of_board = (int((game_state.data.layout.width / 2) - 1), int(game_state.data.layout.height / 2))
+            if game_state.is_on_red_team(self.index):
+                center_of_board = (int((game_state.data.layout.width / 2) - 1), int(game_state.data.layout.height / 2))
+            else:
+                center_of_board = (int((game_state.data.layout.width / 2)), int((game_state.data.layout.height / 2) - 1))
             # Primer cas: no detecta cap enemic
             if (len(invaders) == 0):
                 distance = self.get_maze_distance(new_pos, center_of_board)

@@ -203,39 +203,46 @@ class DefensiveReflexAgent(ReflexCaptureAgent):
         return {'num_invaders': -1000, 'on_defense': 100, 'invader_distance': -10, 'stop': -100, 'reverse': -2}
 
 """class OffensivePro(CaptureAgent):
+    def get_successor(self, game_state, action):
+        successor = game_state.generate_successor(self.index, action)
+        pos = successor.get_agent_state(self.index).get_position()
+        if pos != nearestPoint(pos):
+            # Only half a grid position was covered
+            return successor.generate_successor(self.index, action)
+        else:
+            return successor
+        
     def choose_action(self, game_state):
         actions = game_state.get_legal_actions(self.index)
 
-        best_distance = 9999
+        best_value = -9999
         best_action = None
         for action in actions:
-            successor = self.get_successor(game_state, action)
-            new_pos = successor.get_position()
-
-            enemies = [successor.get_agent_state(i) for i in self.get_opponents(successor)]
+            value = self.evaluationFunction(game_state, action)
+            if value > best_value:
+                best_action = action
+                best_value = value
+        return best_action
 
     
     def evaluationFunction(self, game_state, action):
         successor = self.get_successor(game_state, action)
         my_pos = successor.get_agent_state(self.index).get_position()
-        newFood = successorGameState.getFood()
-        newGhostStates = successorGameState.getGhostStates()
-        newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        enemies = [successor.get_agent_state(i) for i in self.get_opponents(successor)]
 
-        "*** YOUR CODE HERE ***"
         maxDistance = -100000
         distance = 0
-        foodGame = currentGameState.getFood().asList()
+        food_list = self.get_food(successor).as_list()
 
-        for ghostState in newGhostStates:
-            GhostPosition = ghostState.getPosition()
-            if (newPos == GhostPosition):
+        for enemy in enemies:
+            GhostPosition = enemy.get_position()
+            if (my_pos == GhostPosition):
                 return -100000
+            
         
-        for food in foodGame:
-            distance = -(manhattanDistance(food, newPos))
-            if (distance > maxDistance):
-                maxDistance = distance
+        distance = min([self.get_maze_distance(my_pos, food) for food in food_list])
+        if distance > maxDistance:
+            maxDistance = distance
         return maxDistance
 """
 class DefensivePro(CaptureAgent):
